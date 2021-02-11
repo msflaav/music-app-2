@@ -122,10 +122,10 @@ export default {
       },
       allmusic: [],
       addState: false,
-      addLoading: false,
       musicLoading: false,
       isValid: false,
-      addState: false,
+      addLoading: false,
+      // addState: false,
     };
   },
   computed: {
