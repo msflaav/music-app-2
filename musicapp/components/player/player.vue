@@ -9,7 +9,7 @@
       <div class="row mt-5">
         <div class="col-md-6">
           <img
-            src="https://images.pexels.com/photos/3624281/pexels-photo-3624281.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+            src="https://images.macrumors.com/t/sqodWOqvWOvq6cU8t2ahMlU4AJM=/1600x0/article-new/2018/05/apple-music-note.jpg"
             class="image"
           />
           <div class="card player_card">
@@ -18,10 +18,20 @@
                 <b>{{ this.current.title }} - {{ this.current.artist }}</b>
               </h6>
               <div>
-                <i class="fas fa-backward control mr-4" @click="prev"></i>
-                <i class="fas fa-play play" v-if="!isplaying" @click="play"></i>
-                <i class="fas fa-pause play" @click="pause" v-else></i>
-                <i class="fas fa-forward control ml-4" @click="next"></i>
+                <!-- <i class="fas fa-backward control mr-4" @click="prev"></i> -->
+                <button class="btn btn-primary" @click="prev">Prev</button>
+                <!-- <i class="fas fa-play play" v-if="!isplaying" @click="play"></i> -->
+                <button
+                  class="btn btn-primary"
+                  v-if="!isplaying"
+                  @click="play(music)"
+                >
+                  Play
+                </button>
+                <!-- <i class="fas_fa-pause_play" @click="pause" v-else></i> -->
+                <button class="btn btn-primary" @click="pause">Pause</button>
+                <!-- <i class="fas fa-forward control ml-4" @click="next"></i> -->
+                <button class="btn btn-primary" @click="next">Next</button>
               </div>
             </div>
           </div>
@@ -127,20 +137,20 @@ export default {
       this.current = this.allMusic[this.index];
       this.play(this.current);
     },
+    prev() {
+      this.index--;
+      if (this.index < 0) {
+        this.index = this.allMusic.length - 1;
+      }
+      this.current = this.allMusic[this.index];
+      this.play(this.current);
+    },
   },
   created() {
     if (process.client) {
       this.player = new Audio();
     }
     this.getAllSongs();
-  },
-  prev() {
-    this.index--;
-    if (this.index < 0) {
-      this.index = this.allMusic.length - 1;
-    }
-    this.current = this.allMusic[this.index];
-    this.play(this.current);
   },
 };
 </script>
@@ -152,6 +162,9 @@ export default {
   height: 300px;
   width: 100%;
 }
+/* .fas_fa-play_play {
+  color: pink;
+} */
 .player_card {
   text-align: center;
   bottom: 20px;
