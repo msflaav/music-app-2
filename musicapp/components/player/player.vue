@@ -46,6 +46,9 @@
                     <button class="btn btn-primary" @click="play(music)">
                       Play
                     </button>
+                    <button class="btn btn-primary" @click="pause(music)">
+                      Pause
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -108,8 +111,13 @@ export default {
       this.isplaying = true;
     },
     pause() {
-      this.player.pause();
-      this.isplaying = false;
+      if (this.player.paused) {
+        this.player.play();
+        this.isplaying = true;
+      } else {
+        this.player.pause();
+        this.isplaying = false;
+      }
     },
     next() {
       this.index++;
