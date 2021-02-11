@@ -2,7 +2,7 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-info">
       <div class="container">
-        <a class="navbar-brand" href="#">Music App</a>
+        <nuxt-link to="/" class="navbar-brand">Music App</nuxt-link>
         <button
           class="navbar-toggler"
           type="button"
@@ -20,10 +20,10 @@
         >
           <ul class="navbar-nav">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Player</a>
+              <nuxt-link to="/" class="nav-link">Player</nuxt-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Manager</a>
+              <nuxt-link to="/manager" class="nav-link">Manager</nuxt-link>
             </li>
           </ul>
         </div>
@@ -31,6 +31,7 @@
     </nav>
   </header>
 </template>
+
 <style scoped>
 .nav-link,
 .navbar-brand {

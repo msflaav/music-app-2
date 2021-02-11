@@ -24,18 +24,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //configure body-parser ends here
 app.use(morgan("dev")); // configire morgan
-
-
 app.use('/uploads', express.static('uploads'));
 // define first route
 app.get("/", (req, res) => {
   res.json("Hola MEVN devs...Assemble");
-});
-
+}); 
 const musicRoutes = require("./api/routes/music"); //bring in our user routes
 app.use("/music", musicRoutes);
-
-
 app.listen(PORT, () => {
   console.log(`App is running on ${PORT}`);
 });

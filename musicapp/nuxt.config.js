@@ -18,6 +18,9 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    {
+      src: '~/plugins/sweetalert'
+    }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -49,6 +52,15 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend(config, ctx) {
+      config.module.rules.push({
+        test: /\.(ogg|mp3|mp4|wav|mpe?g)$/i,
+        loader: 'file-loader',
+        options: {
+          name: '\[path\][name].[ext]'
+        }
+      })
+    }
   },
   
   axios: {
