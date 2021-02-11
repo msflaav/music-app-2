@@ -12,7 +12,7 @@
             src="https://images.macrumors.com/t/sqodWOqvWOvq6cU8t2ahMlU4AJM=/1600x0/article-new/2018/05/apple-music-note.jpg"
             class="image"
           />
-          <div class="card player_card">
+          <div v-if="this.current" class="card player_card">
             <div class="card-body">
               <h6 class="card-title">
                 <b>{{ this.current.title }} - {{ this.current.artist }}</b>
@@ -32,6 +32,9 @@
                 <button class="btn btn-primary" @click="pause">Pause</button>
                 <!-- <i class="fas fa-forward control ml-4" @click="next"></i> -->
                 <button class="btn btn-primary" @click="next">Next</button>
+                <button class="btn btn-primary" @click="shuffle">
+                  Shuffle
+                </button>
               </div>
             </div>
           </div>
@@ -144,6 +147,9 @@ export default {
       }
       this.current = this.allMusic[this.index];
       this.play(this.current);
+    },
+    shuffle() {
+      this.index.randomize();
     },
   },
   created() {
