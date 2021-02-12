@@ -74,13 +74,12 @@
               title="Type in a name"
             /> -->
 
-            <!-- <BaseButton type="error">Button</BaseButton> -->
             <div class="w-full px-3 mb-6">
-              <label
+              <!-- <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="name"
               >
-              </label>
+              </label> -->
               <div class="relative mb-3">
                 <input
                   v-model="keyword"
@@ -137,7 +136,6 @@
 <script>
 import axios from "axios";
 import { debounce } from "lodash";
-// import BaseButton from "./BaseButton";
 
 export default {
   data() {
@@ -155,9 +153,7 @@ export default {
       player: "",
     };
   },
-  // components: {
-  //   BaseButton,
-  // },
+
   methods: {
     async initPlayer() {
       if (this.allMusic !== []) {
