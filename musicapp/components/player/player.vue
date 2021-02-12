@@ -66,6 +66,67 @@
                 </tr>
               </tbody>
             </table>
+            <!-- <input
+              type="text"
+              id="myInput"
+              onkeyup="searchSong()"
+              placeholder="Search for songs.."
+              title="Type in a name"
+            /> -->
+
+            <!-- <BaseButton type="error">Button</BaseButton> -->
+            <div class="w-full px-3 mb-6">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="name"
+              >
+              </label>
+              <div class="relative mb-3">
+                <input
+                  v-model="keyword"
+                  class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  id="name"
+                  placeholder="Search for songs.."
+                />
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+                >
+                  <svg
+                    class="h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#000000"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </div>
+              </div>
+              <button
+                @click.prevent="checkName"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Search
+              </button>
+            </div>
+
+            <!-- <ul class="px-3 list-disc">
+                  <li v-for="people in peoples" :key="people.url">
+                    {{ people.name }} - Height: {{ people.height }} Mass:
+                    {{ people.mass }}
+                  </li>
+                </ul> -->
+            <ul class="px-3 list-disc">
+              <li v-for="music in music" :key="music.url">
+                {{ music.title }} - Artist: {{ music.artist }}
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -74,12 +135,18 @@
 </template>
 
 <script>
+import axios from "axios";
+import { debounce } from "lodash";
+// import BaseButton from "./BaseButton";
+
 export default {
   data() {
     return {
       current: {
         title: "",
         artist: "",
+        keyword: "",
+        music: [],
       },
       song: true,
       isplaying: false,
@@ -88,6 +155,9 @@ export default {
       player: "",
     };
   },
+  // components: {
+  //   BaseButton,
+  // },
   methods: {
     async initPlayer() {
       if (this.allMusic !== []) {
@@ -149,7 +219,27 @@ export default {
       this.play(this.current);
     },
     shuffle() {
-      this.index.randomize();
+      this.index = Math.floor(Math.random() * this.allMus.length);
+      this.current = this.allMusic[this.index];
+      this.play(this.current);
+    },
+    checkName() {
+      console.log(`Checking name: ${this.keyword}`);
+      axios
+        .get("http://localhost:4000/music/", {
+          params: {
+            search: this.keyword,
+          },
+        })
+        .then((res) => {
+          // eslint-disable-next-line no-console
+          console.log(res.data.results);
+          this.music = res.data.results;
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.log(err);
+        });
     },
   },
   created() {
@@ -157,6 +247,13 @@ export default {
       this.player = new Audio();
     }
     this.getAllSongs();
+    this.debounceName = debounce(this.checkName, 1000);
+  },
+  watch: {
+    keyword() {
+      if (!this.keyword) return;
+      this.debounceName();
+    },
   },
 };
 </script>
@@ -168,9 +265,6 @@ export default {
   height: 300px;
   width: 100%;
 }
-/* .fas_fa-play_play {
-  color: pink;
-} */
 .player_card {
   text-align: center;
   bottom: 20px;
