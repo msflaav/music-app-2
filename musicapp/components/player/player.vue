@@ -18,9 +18,8 @@
                 <b>{{ this.current.title }} - {{ this.current.artist }}</b>
               </h6>
               <div>
-                <!-- <i class="fas fa-backward control mr-4" @click="prev"></i> -->
                 <button class="btn btn-primary" @click="prev">Prev</button>
-                <!-- <i class="fas fa-play play" v-if="!isplaying" @click="play"></i> -->
+
                 <button
                   class="btn btn-primary"
                   v-if="!isplaying"
@@ -28,19 +27,22 @@
                 >
                   Play
                 </button>
-                <!-- <i class="fas_fa-pause_play" @click="pause" v-else></i> -->
                 <button class="btn btn-primary" @click="pause">Pause</button>
-                <!-- <i class="fas fa-forward control ml-4" @click="next"></i> -->
                 <button class="btn btn-primary" @click="next">Next</button>
                 <button class="btn btn-primary" @click="shuffle">
                   Shuffle
                 </button>
               </div>
             </div>
+            <div>
+              Time until idle
+              <v-idle @idle="onidle" :duration="30" />
+            </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card shadow">
+            <h2 class="text-center">My playlist</h2>
             <table class="table">
               <thead>
                 <tr>
@@ -64,68 +66,24 @@
                     </button>
                   </td>
                 </tr>
+                <tr
+                  v-for="(music, index) in filteredMusic"
+                  :key="`title-${index}`"
+                >
+                  <td v-html="highlightMatches(music.artist)"></td>
+                  <td
+                    v-html="
+                      highlightMatches([...music.title].sort().join(', '))
+                    "
+                  ></td>
+                </tr>
               </tbody>
             </table>
-            <!-- <input
+            <input
               type="text"
-              id="myInput"
-              onkeyup="searchSong()"
-              placeholder="Search for songs.."
-              title="Type in a name"
-            /> -->
-
-            <div class="w-full px-3 mb-6">
-              <!-- <label
-                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                for="name"
-              >
-              </label> -->
-              <div class="relative mb-3">
-                <input
-                  v-model="keyword"
-                  class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  id="name"
-                  placeholder="Search for songs.."
-                />
-                <div
-                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
-                >
-                  <svg
-                    class="h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#000000"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </div>
-              </div>
-              <button
-                @click.prevent="checkName"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Search
-              </button>
-            </div>
-
-            <!-- <ul class="px-3 list-disc">
-                  <li v-for="people in peoples" :key="people.url">
-                    {{ people.name }} - Height: {{ people.height }} Mass:
-                    {{ people.mass }}
-                  </li>
-                </ul> -->
-            <ul class="px-3 list-disc">
-              <li v-for="music in music" :key="music.url">
-                {{ music.title }} - Artist: {{ music.artist }}
-              </li>
-            </ul>
+              placeholder="Search by title or artist"
+              v-model="filter"
+            />
           </div>
         </div>
       </div>
@@ -134,23 +92,24 @@
 </template>
 
 <script>
-import axios from "axios";
-import { debounce } from "lodash";
+import Vue from "vue";
+import Vidle from "v-idle";
+
+Vue.use(Vidle);
 
 export default {
   data() {
     return {
       current: {
         title: "",
-        artist: "",
-        keyword: "",
-        music: [],
       },
       song: true,
       isplaying: false,
       allMusic: null,
       index: 0,
       player: "",
+      filter: "",
+      music: [],
     };
   },
 
@@ -215,27 +174,25 @@ export default {
       this.play(this.current);
     },
     shuffle() {
-      this.index = Math.floor(Math.random() * this.allMus.length);
+      this.index = Math.floor(Math.random() * this.allMusic.length);
       this.current = this.allMusic[this.index];
       this.play(this.current);
     },
-    checkName() {
-      console.log(`Checking name: ${this.keyword}`);
-      axios
-        .get("http://localhost:4000/music/", {
-          params: {
-            search: this.keyword,
-          },
-        })
-        .then((res) => {
-          // eslint-disable-next-line no-console
-          console.log(res.data.results);
-          this.music = res.data.results;
-        })
-        .catch((err) => {
-          // eslint-disable-next-line no-console
-          console.log(err);
-        });
+    onidle() {
+      alert("Idle mode on to save battery");
+    },
+
+    highlightMatches(text) {
+      const matchExists = text
+        .toLowerCase()
+        .includes(this.filter.toLowerCase());
+      if (!matchExists) return text;
+
+      const re = new RegExp(this.filter, "ig");
+      return text.replace(
+        re,
+        (matchedText) => `<strong>${matchedText}</strong>`
+      );
     },
   },
   created() {
@@ -243,12 +200,16 @@ export default {
       this.player = new Audio();
     }
     this.getAllSongs();
-    this.debounceName = debounce(this.checkName, 1000);
   },
-  watch: {
-    keyword() {
-      if (!this.keyword) return;
-      this.debounceName();
+
+  computed: {
+    filteredMusic() {
+      return this.music.filter((music) => {
+        const title = music.title.toString().toLowerCase();
+        const artist = music.artist.toLowerCase();
+        const searchTerm = this.filter.toLowerCase();
+        return artist.includes(searchTerm) || title.includes(searchTerm);
+      });
     },
   },
 };

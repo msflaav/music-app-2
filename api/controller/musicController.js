@@ -35,3 +35,23 @@ exports.deleteMusic = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+exports.findByTitle = (req, res) => {
+    Music.find({ title: req.params.title})
+  .then( 
+    music => {
+      res.send(customers)
+    }
+  )
+  .catch(err => {
+    res.status(500).send("Error -> " + err);
+  })
+};
+  //   try {
+  //     let search = req['query']['search']
+  //     let music = await Music.find({title: search});
+  //     res.status(200).json(music);
+  //   } catch (err) {
+  //     res.status(500).json(err);
+  //   }
+  // };

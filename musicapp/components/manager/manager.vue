@@ -1,6 +1,26 @@
 <template>
   <section class="mt-5">
     <div class="container mb-4">
+      <div class="searchform">
+        <h4>Find by Title</h4>
+        <div class="form-group">
+          <input
+            class="form-control"
+            id="title"
+            required
+            v-model="title"
+            name="title"
+          />
+        </div>
+      </div>
+      <div class="btn-group">
+        <button v-on:click="searchTitle" class="btn btn-success">Search</button>
+      </div>
+      <ul class="search-result">
+        <li v-for="(title, index) in search" :key="index">
+          <h6>{{ music.name }} ({{ music.title }})</h6>
+        </li>
+      </ul>
       <div class="row">
         <div class="col-md-12">
           <div class="card" v-if="addState">
@@ -8,6 +28,7 @@
               <div class="card-title mb-4">
                 <h4>Add Music</h4>
               </div>
+
               <form @submit.prevent="addNewMusic">
                 <div class="form-group">
                   <label for="title">Title</label>
@@ -65,7 +86,6 @@
               <button class="btn btn-info m-3" @click="initForm">
                 {{ addState ? "Cancel" : "Add New Music" }}
               </button>
-              >>
             </div>
             <div class="card-body">
               <table class="table">
@@ -112,6 +132,9 @@
 </template>
 
 <script>
+import axios from "axios";
+// import { http } from '../http-common'
+
 export default {
   data() {
     return {
@@ -125,7 +148,6 @@ export default {
       musicLoading: false,
       isValid: false,
       addLoading: false,
-      // addState: false,
     };
   },
   computed: {
@@ -216,6 +238,36 @@ export default {
           swal("Your Music file is safe!");
         }
       });
+    },
+
+    // checkName() {
+    //   console.log(`Checking name: ${this.keyword}`)
+
+    //   axios
+    //     .get('http://localhost:4000/music/', {
+    //       params: {
+    //         search: this.keyword,
+    //       },
+    //     })
+    //     .then((res) => {
+    //       console.log(res.data.music)
+    //       this.search = res.data.music
+    //     })
+    //     .catch((err) => {
+    //       console.log(err)
+    //     })
+    // },
+
+    searchTitle() {
+      axios
+        .get("/music/title/" + this.title)
+        .then((response) => {
+          this.music = response.data; // JSON are parsed automatically.
+          console.log(response.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
   },
   created() {
